@@ -18,14 +18,20 @@ button{
   font-size:24px;
   padding:10px 20px;
 }
+#startBtn.active{
+  background-color:#4CAF50; /* 緑 */
+  color:white;
+}
 </style>
 </head>
 
 <body>
 
 <div id="clock">--:--:--</div>
-<button onclick="startClock()">開始</button>
-
+<button id="startBtn" onclick="startClock()">開始</button>
+<button onclick="document.getElementById('beep').play()">
+  テスト再生
+</button>
 <audio id="beep" src="beep.mp3" preload="auto"></audio>
 
 <script>
@@ -33,6 +39,9 @@ let started = false;
 
 function startClock(){
     started = true;
+    
+    // ボタンをアクティブ表示
+    document.getElementById("startBtn").classList.add("active");
 }
 
 function updateClock(){
@@ -63,4 +72,3 @@ if('serviceWorker' in navigator){
 
 </body>
 </html>
-
