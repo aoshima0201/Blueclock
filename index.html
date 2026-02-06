@@ -13,13 +13,31 @@ body{
   text-align:center;
   font-family:sans-serif;
   margin-top:50px;
+
+  background-color: #ffffff;
+  transition: background-color 0.3s;
 }
 button{
   font-size:24px;
-  padding:10px 20px;
+  padding:12px 24px;
+
+  border-radius: 18px;
+  border: none;
+
+  background-color: #f2f2f7;   /* iOSグレー */
+  color: #000;
+
+  cursor: pointer;
+
+  -webkit-appearance: none;
+  appearance: none;
+  
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.04);
 }
 #startBtn.active{
-  background-color:#4CAF50; /* 緑 */
+  background-color: #34C759;  /* iOSグリーン */
   color:white;
 }
 </style>
@@ -28,13 +46,43 @@ button{
 <body>
 
 <div id="clock">--:--:--</div>
-<button id="startBtn" onclick="startClock()">開始</button>
-<button onclick="document.getElementById('beep').play()">
-  テスト再生
-</button>
+
+<div>
+    <button id="startBtn" onclick="startClock()">開始</button>
+    <button onclick="document.getElementById('beep').play()">テスト再生</button>
+    <button onclick="stopSound()">音を止める</button>
+    <button onclick="changeBackground()">背景切替</button>
+</div>
+
+<div>
+    <select id="beepUnit">
+    <option value="h">h</option>
+    <option value="m">m</option>
+    <option value="s" selected>s</option>
+    </select>
+
+    <input id="beepValue" type="number" min="0" value="30">
+
+    <button id="saveBtn" onclick="saveValue()">保存</button>    
+</div>
+
 <audio id="beep" src="beep.mp3" preload="auto"></audio>
 
 <script>
+const bgColors = [
+  "#ffffff", // 白（初期）
+  "#f2f2f7", // 薄いグレー（iOS系）
+  "#f5f0e6", // 薄いベージュ
+  "#2c2c2e"  // 濃いグレー（ダーク）
+];
+
+// 保存されていればそれを使う
+let bgIndex = Number(localStorage.getItem("bgIndex")) || 0;
+
+// 初期反映
+document.body.style.backgroundColor = bgColors[bgIndex];
+document.body.style.color = (bgIndex === 3) ? "white" : "black";
+
 let started = false;
 
 function startClock(){
@@ -42,6 +90,12 @@ function startClock(){
     
     // ボタンをアクティブ表示
     document.getElementById("startBtn").classList.add("active");
+}
+
+function stopSound(){
+    const beep = document.getElementById("beep");
+    beep.pause();
+    beep.currentTime = 0;
 }
 
 function updateClock(){
@@ -60,6 +114,42 @@ function updateClock(){
         document.getElementById("beep").play();
     }
 }
+
+function changeBackground(){
+    bgIndex = (bgIndex + 1) % bgColors.length;
+    document.body.style.backgroundColor = bgColors[bgIndex];
+
+    // ダーク時は文字色も調整
+    if(bgIndex === 3){
+        document.body.style.color = "white";
+    }else{
+        document.body.style.color = "black";
+    }
+    
+    // 状態を保存
+    localStorage.setItem("bgIndex", bgIndex);
+}
+
+let beepUnit = "s"; // h / m / s
+let beepValue = 30;
+
+// 保存ボタン
+function saveValue(){
+  const unit = document.getElementById("beepUnit").value;
+  const value = parseInt(document.getElementById("beepValue").value, 10);
+
+  if (isNaN(value) || value < 0) {
+    alert("0以上の数値を入力してください");
+    return;
+  }
+
+  beepUnit = unit;
+  beepValue = value;
+
+  localStorage.setItem("beepUnit", beepUnit);
+  localStorage.setItem("beepValue", beepValue);
+  console.log("保存しました："+ value);
+};
 
 setInterval(updateClock,1000);
 
