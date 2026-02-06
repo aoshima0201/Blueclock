@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clock PWA</title>
+
+<link rel="manifest" href="manifest.json">
+
+<style>
+body{
+  font-size:40px;
+  text-align:center;
+  font-family:sans-serif;
+  margin-top:50px;
+}
+button{
+  font-size:24px;
+  padding:10px 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="clock">--:--:--</div>
+<button onclick="startClock()">開始</button>
+
+<audio id="beep" src="beep.mp3" preload="auto"></audio>
+
+<script>
+let started = false;
+
+function startClock(){
+    started = true;
+}
+
+function updateClock(){
+
+    const now = new Date();
+
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+
+    document.getElementById("clock").textContent = `${h}:${m}:${s}`;
+
+    // 00分ちょうど
+    if(started && m === "11" && s === "00"){
+        document.getElementById("beep").play();
+    }
+}
+
+setInterval(updateClock,1000);
+
+
+// ServiceWorker登録
+if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('service-worker.js');
+}
+</script>
+
+</body>
+</html>
