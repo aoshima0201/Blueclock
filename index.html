@@ -46,7 +46,8 @@ function updateClock(){
     document.getElementById("clock").textContent = `${h}:${m}:${s}`;
 
     // 00分ちょうど
-    if(started && m === "11" && s === "00"){
+    //if(started && m === "00" && s === "00"){
+    if(started && (s === "30" || s === "00")){
         document.getElementById("beep").play();
     }
 }
@@ -62,3 +63,4 @@ if('serviceWorker' in navigator){
 
 </body>
 </html>
+
